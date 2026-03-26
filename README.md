@@ -39,9 +39,15 @@ employee_sql_assignment/
 │   ├── requirements.txt               (Python dependencies)
 │   └── README.md                      (Logger documentation)
 │
+├── bosp-audit-logger.py               (Main audit logging module - Dataproc jobs)
+├── dataproc_job_example.py            (Example Dataproc job using audit logger)
+├── airflow_dataproc_dag.py            (Example Airflow DAG for orchestration)
+│
 └── screenshots/
     └── result.png                     (Example output)
 ```
+
+**Note:** `bosp-audit-logger.py`, `dataproc_job_example.py`, and `airflow_dataproc_dag.py` are **separate from the SQL assignment**. They're general-purpose Dataproc/Airflow infrastructure files.
 
 ---
 
@@ -241,6 +247,113 @@ Before submitting:
 
 ---
 
+## � Dataproc Integration
+
+### ⚠️ Important: Separate Concern
+
+The `bosp-audit-logger.py` module is **INDEPENDENT OF THE SQL ASSIGNMENT**. It's a general-purpose audit logging library designed for production Dataproc jobs orchestrated by Apache Airflow DAGs.
+
+**Not related to:**
+- Employee database SQL queries
+- SQL assignment learning objectives
+- Query execution results
+
+**Related to:**
+- Audit trail tracking and compliance
+- Job monitoring and logging
+- Performance metrics collection
+- GCP Cloud Logging integration
+- Airflow/Dataproc job orchestration
+
+### BOSP Audit Logger
+
+**Files:**
+- `bosp-audit-logger.py` - Main audit logging module
+- `dataproc_job_example.py` - Example Dataproc job using the logger
+- `airflow_dataproc_dag.py` - Example Airflow DAG orchestrating Dataproc jobs
+- `src/` - Python Google Cloud logging library
+
+**Features:**
+- Query execution logging with metrics (any query type)
+- Data processing event tracking
+- Job-level event logging
+- Exception and error tracking
+- Audit trail logging for compliance
+- Performance metrics monitoring
+- Singleton pattern for global logger access
+
+**Usage in Dataproc Job:**
+
+```python
+from bosp_audit_logger import BospAuditLogger, get_logger
+
+# Initialize logger
+logger = BospAuditLogger()
+
+# Log query execution
+logger.log_query_execution(
+    query="SELECT * FROM employees",
+    execution_time=0.245,
+    rows_processed=1000,
+    rows_output=100,
+    success=True
+)
+
+# Log data processing
+logger.log_data_process_event(
+    event_name="employee_data_validation",
+    status="completed",
+    records_processed=1000,
+    records_valid=950,
+    records_invalid=50,
+    duration=2.5
+)
+
+# Or use module-level functions
+from bosp_audit_logger import log_query, log_metric
+
+log_query("SELECT ...", 0.5)
+log_metric("throughput", 400, unit="records/sec")
+```
+
+**Usage in Airflow DAG:**
+
+```python
+from airflow.providers.google.cloud.operators.dataproc import DataprocSubmitJobOperator
+
+submit_job = DataprocSubmitJobOperator(
+    task_id="submit_dataproc_job",
+    job_config={
+        "pyspark_job": {
+            "main_python_file_uri": "gs://my-bucket/dataproc_job_example.py",
+            "python_file_uris": [
+                "gs://my-bucket/bosp-audit-logger.py",
+                "gs://my-bucket/src/__init__.py",
+                "gs://my-bucket/src/logger.py",
+            ],
+        }
+    },
+    cluster_name="my-cluster",
+    region="us-central1",
+    project_id="my-gcp-project",
+)
+```
+
+**Environment Variables:**
+```bash
+GOOGLE_CLOUD_PROJECT=your-gcp-project
+DATAPROC_JOB_ID=your-job-id
+DATAPROC_CLUSTER_NAME=your-cluster
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
+ENVIRONMENT=production
+```
+
+**Example Files:**
+- [dataproc_job_example.py](dataproc_job_example.py) - Standalone Dataproc job example
+- [airflow_dataproc_dag.py](airflow_dataproc_dag.py) - Example Airflow DAG configuration
+
+---
+
 ## 💡 Key SQL Concepts
 
 This assignment teaches:
@@ -256,6 +369,7 @@ This assignment teaches:
 
 **Status:** Ready to use
 **Database:** MySQL (existing connection)
+**Dataproc:** Ready for Dataproc job integration
 **Last Updated:** March 2026
 
 Good luck! Start with [docs/problem_statement.md](docs/problem_statement.md) 🚀
