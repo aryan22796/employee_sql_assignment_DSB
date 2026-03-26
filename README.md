@@ -31,6 +31,14 @@ employee_sql_assignment/
 │   ├── explanation.md                 (Concept explanations)
 │   └── test_cases.md                  (Validation checklist)
 │
+├── src/
+│   ├── __init__.py                    (Package initialization)
+│   ├── config.py                      (Logger configuration)
+│   ├── logger.py                      (Logger implementation)
+│   ├── example.py                     (Usage examples)
+│   ├── requirements.txt               (Python dependencies)
+│   └── README.md                      (Logger documentation)
+│
 └── screenshots/
     └── result.png                     (Example output)
 ```
@@ -77,6 +85,37 @@ Read [docs/explanation.md](docs/explanation.md) for concept explanations
 | [schema/sample_data.sql](schema/sample_data.sql) | INSERT statements (reference only) |
 | [queries/practice_queries.sql](queries/practice_queries.sql) | Step-by-step learning queries |
 | [queries/main_query.sql](queries/main_query.sql) | Your assignment task |
+
+---
+
+## 🐍 Python Logger Library
+
+Located in `src/` - Google Cloud Logging integration for centralized logging and monitoring
+
+| File | Purpose |
+|------|---------|
+| [src/__init__.py](src/__init__.py) | Package initialization |
+| [src/config.py](src/config.py) | Logger configuration |
+| [src/logger.py](src/logger.py) | Logger implementation |
+| [src/example.py](src/example.py) | Usage examples |
+| [src/requirements.txt](src/requirements.txt) | Python dependencies |
+| [src/README.md](src/README.md) | Logger documentation |
+
+**Quick Setup:**
+```bash
+pip install -r src/requirements.txt
+export GOOGLE_CLOUD_PROJECT=your-project-id
+export GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
+```
+
+**Usage:**
+```python
+from src import CloudLogger, LoggerConfig
+
+config = LoggerConfig(project_id="my-project")
+logger = CloudLogger(config=config)
+logger.info("Message")
+```
 
 ---
 
